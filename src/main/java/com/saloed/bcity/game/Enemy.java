@@ -164,24 +164,24 @@ public class Enemy extends Entity {
         float tankCenterX = x + tankSize / 2;
         float tankCenterY = y + tankSize / 2;
         
-        // Bullet sizes scaled
+        // Bullet sizes scaled to 24x32 at 4x
         float bulletX, bulletY;
         
         switch (heading) {
             case NORTH -> {
                 bulletX = tankCenterX - 12; // centered horizontally
-                bulletY = y - 16; // spawn at top edge
+                bulletY = y - 16; // spawn just in front of tank
             }
             case SOUTH -> {
                 bulletX = tankCenterX - 12; // centered horizontally
-                bulletY = y + tankSize - 16; // spawn at bottom edge
+                bulletY = y + tankSize; // spawn below tank
             }
             case EAST -> {
-                bulletX = x + tankSize - 16; // spawn at right edge
+                bulletX = x + tankSize; // spawn to the right of tank
                 bulletY = tankCenterY - 12; // centered vertically
             }
             case WEST -> {
-                bulletX = x - 16; // spawn at left edge
+                bulletX = x - 16; // spawn just to the left of tank
                 bulletY = tankCenterY - 12; // centered vertically
             }
             default -> {

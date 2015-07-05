@@ -172,19 +172,34 @@ public class Level {
     }
 
     public boolean checkBulletCollision(float x, float y, float width, float height) {
-        // Check all tiles that the rectangle overlaps (bullets pass through water and grass)
-        int startX = (int) (x / (Tile.TILE_SIZE * TILE_SCALE));
-        int startY = (int) (y / (Tile.TILE_SIZE * TILE_SCALE));
-        int endX = (int) ((x + width - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
-        int endY = (int) ((y + height - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
+        return checkBulletCollision(x, y, width, height, 0, 0);
+    }
 
-        for (int ty = startY; ty <= endY; ty++) {
-            for (int tx = startX; tx <= endX; tx++) {
-                if (tx >= 0 && tx < TILES_X && ty >= 0 && ty < TILES_Y) {
-                    Tile tile = tiles[ty][tx];
-                    // Bullets pass through water and grass
-                    if (tile.isSolid() && tile.getType() != TileType.WATER && tile.getType() != TileType.GRASS) {
-                        return true;
+    public boolean checkBulletCollision(float x, float y, float width, float height, float prevX, float prevY) {
+        // Check all tiles along the bullet's path (including fast-moving bullets)
+        float step = 4.0f;
+        float dx = x - prevX;
+        float dy = y - prevY;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        int steps = Math.max(1, (int) (distance / step));
+
+        for (int i = 0; i <= steps; i++) {
+            float checkX = prevX + (dx * i / steps);
+            float checkY = prevY + (dy * i / steps);
+
+            int startX = (int) (checkX / (Tile.TILE_SIZE * TILE_SCALE));
+            int startY = (int) (checkY / (Tile.TILE_SIZE * TILE_SCALE));
+            int endX = (int) ((checkX + width - 0.1f) / (Tile.TILE_SIZE * TILE_SCALE));
+            int endY = (int) ((checkY + height - 0.1f) / (Tile.TILE_SIZE * TILE_SCALE));
+
+            for (int ty = startY; ty <= endY; ty++) {
+                for (int tx = startX; tx <= endX; tx++) {
+                    if (tx >= 0 && tx < TILES_X && ty >= 0 && ty < TILES_Y) {
+                        Tile tile = tiles[ty][tx];
+                        // Bullets pass through water and grass
+                        if (tile.isSolid() && tile.getType() != TileType.WATER && tile.getType() != TileType.GRASS) {
+                            return true;
+                        }
                     }
                 }
             }

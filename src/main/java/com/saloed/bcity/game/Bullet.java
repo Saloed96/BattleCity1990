@@ -10,17 +10,17 @@ import javafx.scene.image.Image;
 public class Bullet extends Entity {
 
     public static final int BULLET_SIZE = 8;
-    public static final float BULLET_SPEED = 6.0f;
+    public static final float BULLET_SPEED = 12.0f; // Faster at 4x scale
 
-    // Bullet sizes vary by direction
-    private static final int BULLET_W_UP = 3;
-    private static final int BULLET_H_UP = 4;
-    private static final int BULLET_W_LEFT = 4;
-    private static final int BULLET_H_LEFT = 3;
-    private static final int BULLET_W_DOWN = 3;
-    private static final int BULLET_H_DOWN = 4;
-    private static final int BULLET_W_RIGHT = 4;
-    private static final int BULLET_H_RIGHT = 3;
+    // Bullet sizes vary by direction (larger for 4x scale)
+    private static final int BULLET_W_UP = 6;
+    private static final int BULLET_H_UP = 8;
+    private static final int BULLET_W_LEFT = 8;
+    private static final int BULLET_H_LEFT = 6;
+    private static final int BULLET_W_DOWN = 6;
+    private static final int BULLET_H_DOWN = 8;
+    private static final int BULLET_W_RIGHT = 8;
+    private static final int BULLET_H_RIGHT = 6;
 
     public enum Direction {
         UP(0, -1),
@@ -144,8 +144,8 @@ public class Bullet extends Entity {
 
         float otherX = other.x;
         float otherY = other.y;
-        float otherW = Player.SPRITE_SCALE * 2; // Default entity size
-        float otherH = Player.SPRITE_SCALE * 2;
+        float otherW;
+        float otherH;
 
         if (other instanceof Player) {
             otherW = Player.SPRITE_SCALE * ((Player) other).getScale();
@@ -154,9 +154,11 @@ public class Bullet extends Entity {
             otherW = Enemy.SPRITE_SCALE * ((Enemy) other).getScale();
             otherH = Enemy.SPRITE_SCALE * ((Enemy) other).getScale();
         } else if (other instanceof Bullet) {
-            // Doesn't WORK PROPERLY YET
-            otherW = BULLET_SIZE * ((Bullet) other).getScale();
-            otherH = BULLET_SIZE * ((Bullet) other).getScale();
+            otherW = ((Bullet) other).getWidth();
+            otherH = ((Bullet) other).getHeight();
+        } else {
+            otherW = 64; // Default at 4x scale
+            otherH = 64;
         }
 
         return x < otherX + otherW &&

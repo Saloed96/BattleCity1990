@@ -182,6 +182,8 @@ public class Game extends AnimationTimer {
         Iterator<Bullet> bulletIter = bullets.iterator();
         while (bulletIter.hasNext()) {
             Bullet bullet = bulletIter.next();
+            float prevX = bullet.x;
+            float prevY = bullet.y;
             bullet.update(input);
 
             if (!bullet.isActive()) {
@@ -207,7 +209,8 @@ public class Game extends AnimationTimer {
             }
 
             // Check bullet collision with level (bullets pass through water and grass)
-            if (level.checkBulletCollision(bullet.x, bullet.y, bullet.getWidth(), bullet.getHeight())) {
+            // Pass previous position to check entire trajectory
+            if (level.checkBulletCollision(bullet.x, bullet.y, bullet.getWidth(), bullet.getHeight(), prevX, prevY)) {
                 level.damageTileAt(bullet.x + bullet.getWidth()/2, bullet.y + bullet.getHeight()/2);
                 explosions.add(new Explosion(bullet.x, bullet.y, Explosion.Type.SMALL, atlas));
                 bullet.deactivate();
