@@ -151,9 +151,9 @@ public class Explosion extends Entity {
     public void render(GraphicsContext g) {
         if (active && currentFrame < frames.length && frames[currentFrame] != null) {
             Image frameImage = frames[currentFrame];
-            // Scale 1x and center at (x, y)
-            double w = frameImage.getWidth();
-            double h = frameImage.getHeight();
+            // Scale 4x and center at (x, y)
+            double w = frameImage.getWidth() * 4;
+            double h = frameImage.getHeight() * 4;
             g.drawImage(frameImage, x - w / 2, y - h / 2, w, h);
         }
     }

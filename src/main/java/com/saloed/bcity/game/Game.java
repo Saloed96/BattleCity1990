@@ -18,8 +18,8 @@ import static com.saloed.bcity.game.Level.TILE_SCALE;
 
 public class Game extends AnimationTimer {
 
-    public static final int WIDTH = 256;   // 16 tiles * 16 pixels
-    public static final int HEIGHT = 240;  // 15 tiles * 16 pixels
+    public static final int WIDTH = 1024;   // 16 tiles * 64 pixels
+    public static final int HEIGHT = 960;  // 15 tiles * 64 pixels
     public static final String TITLE = "Battle City";
     public static final int CLEAR_COLOR = 0xff000000;
     public static final int NUM_BUFFERS = 3;
@@ -50,7 +50,7 @@ public class Game extends AnimationTimer {
     private int playerLives = 3;
     private int playerRespawnTimer = 0;
     private static final int PLAYER_RESPAWN_DELAY = 120; // 2 seconds at 60fps
-    private static final int HITBOX_INSET = 2; // Smaller hitbox for better corner navigation
+    private static final int HITBOX_INSET = 8; // Smaller hitbox for better corner navigation
 
     public Game(Stage stage) {
         running = false;
@@ -60,7 +60,7 @@ public class Game extends AnimationTimer {
         atlas = new TextureAtlas(ATLAS_FILE_NAME);
 
         level = new Level(atlas);
-        player = new Player(64, 208, TILE_SCALE, 1, atlas);
+        player = new Player(256, 832, TILE_SCALE, 2, atlas);
         enemies = new ArrayList<>();
         bullets = new ArrayList<>();
         explosions = new ArrayList<>();
@@ -254,8 +254,8 @@ public class Game extends AnimationTimer {
                 playerLives--;
                 playerRespawnTimer = 0;
                 if (playerLives > 0) {
-                    player.respawn(64, 208);
-                    explosions.add(new Explosion(64, 208, Explosion.Type.SPAWN, atlas, player));
+                    player.respawn(256, 832);
+                    explosions.add(new Explosion(256, 832, Explosion.Type.SPAWN, atlas, player));
                 }
             }
         }
@@ -268,7 +268,7 @@ public class Game extends AnimationTimer {
 
     private void spawnEnemy() {
         // Spawn positions (top of screen)
-        int[] spawnX = {32, 128, 224};
+        int[] spawnX = {128, 512, 896};
         int x = spawnX[random.nextInt(spawnX.length)];
 
         Enemy.Type type = Enemy.Type.values()[random.nextInt(Enemy.Type.values().length)];

@@ -7,7 +7,7 @@ public class Level {
 
     public static final int TILES_X = 16;
     public static final int TILES_Y = 15;
-    public static final float TILE_SCALE = 1.0f;
+    public static final float TILE_SCALE = 4.0f;
 
     private Tile[][] tiles;
     private TextureAtlas atlas;

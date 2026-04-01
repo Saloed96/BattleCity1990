@@ -79,10 +79,10 @@ public class Tile {
             
             combined = canvas.snapshot(null, null);
             var sheet = new SpriteSheet(combined, 3, TILE_SIZE);
-            return new Sprite(sheet, 1.0f);
+            return new Sprite(sheet, 4.0f);
         } else {
             var sheet = new SpriteSheet(atlas.cut(sx, sy, TILE_SIZE, TILE_SIZE), 1, TILE_SIZE);
-            return new Sprite(sheet, 1.0f); // Scale 1x
+            return new Sprite(sheet, 4.0f); // Scale 4x
         }
     }
 
@@ -128,10 +128,10 @@ public class Tile {
     }
 
     public float getWidth() {
-        return TILE_SIZE;
+        return TILE_SIZE * 4;
     }
 
     public float getHeight() {
-        return TILE_SIZE;
+        return TILE_SIZE * 4;
     }
 }

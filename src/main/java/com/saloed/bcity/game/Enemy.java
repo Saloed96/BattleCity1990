@@ -160,33 +160,33 @@ public class Enemy extends Entity {
 
         cooldown = COOLDOWN_TIME;
 
-        float tankSize = SPRITE_SCALE * scale; // 32 pixels
+        float tankSize = SPRITE_SCALE * scale; // 64 pixels at 4x scale
         float tankCenterX = x + tankSize / 2;
         float tankCenterY = y + tankSize / 2;
         
-        // Bullet sizes: UP/DOWN = 6x8, LEFT/RIGHT = 8x6 (after 2x scale)
+        // Bullet sizes scaled
         float bulletX, bulletY;
         
         switch (heading) {
             case NORTH -> {
-                bulletX = tankCenterX - 3; // 6/2 = 3, center horizontally
-                bulletY = y - 4; // spawn at top edge, slightly above
+                bulletX = tankCenterX - 12; // centered horizontally
+                bulletY = y - 16; // spawn at top edge
             }
             case SOUTH -> {
-                bulletX = tankCenterX - 3; // 6/2 = 3, center horizontally  
-                bulletY = y + tankSize - 4; // spawn at bottom edge
+                bulletX = tankCenterX - 12; // centered horizontally
+                bulletY = y + tankSize - 16; // spawn at bottom edge
             }
             case EAST -> {
-                bulletX = x + tankSize - 4; // spawn at right edge
-                bulletY = tankCenterY - 3; // 6/2 = 3, center vertically
+                bulletX = x + tankSize - 16; // spawn at right edge
+                bulletY = tankCenterY - 12; // centered vertically
             }
             case WEST -> {
-                bulletX = x - 4; // spawn at left edge, slightly outside
-                bulletY = tankCenterY - 3; // 6/2 = 3, center vertically
+                bulletX = x - 16; // spawn at left edge
+                bulletY = tankCenterY - 12; // centered vertically
             }
             default -> {
-                bulletX = tankCenterX - 3;
-                bulletY = y - 4;
+                bulletX = tankCenterX - 12;
+                bulletY = y - 16;
             }
         }
 
