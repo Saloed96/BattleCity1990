@@ -14,10 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static com.saloed.bcity.game.Level.TILE_SCALE;
+
 public class Game extends AnimationTimer {
 
-    public static final int WIDTH = 1600;  // 50 tiles * 32 pixels
-    public static final int HEIGHT = 1184; // 37 tiles * 32 pixels
+    public static final int WIDTH = 256;   // 16 tiles * 16 pixels
+    public static final int HEIGHT = 240;  // 15 tiles * 16 pixels
     public static final String TITLE = "Battle City";
     public static final int CLEAR_COLOR = 0xff000000;
     public static final int NUM_BUFFERS = 3;
@@ -48,6 +50,7 @@ public class Game extends AnimationTimer {
     private int playerLives = 3;
     private int playerRespawnTimer = 0;
     private static final int PLAYER_RESPAWN_DELAY = 120; // 2 seconds at 60fps
+    private static final int HITBOX_INSET = 2; // Smaller hitbox for better corner navigation
 
     public Game(Stage stage) {
         running = false;
@@ -57,7 +60,7 @@ public class Game extends AnimationTimer {
         atlas = new TextureAtlas(ATLAS_FILE_NAME);
 
         level = new Level(atlas);
-        player = new Player(800, 1100, 2, 3, atlas);
+        player = new Player(64, 208, TILE_SCALE, 1, atlas);
         enemies = new ArrayList<>();
         bullets = new ArrayList<>();
         explosions = new ArrayList<>();
@@ -96,14 +99,23 @@ public class Game extends AnimationTimer {
             }
         }
 
-        // Update player with collision
+        // Update player with collision (separate X and Y for wall sliding)
         float oldX = player.x;
         float oldY = player.y;
         player.update(input);
 
-        // Check player collision with level
-        if (level.checkCollision(player.x, player.y, player.getWidth(), player.getHeight())) {
+        // Calculate inset hitbox for player
+        float pw = player.getWidth() - HITBOX_INSET * 2;
+        float ph = player.getHeight() - HITBOX_INSET * 2;
+        float px = player.x + HITBOX_INSET;
+        float py = player.y + HITBOX_INSET;
+
+        // Check X movement separately
+        if (level.checkCollision(px, oldY + HITBOX_INSET, pw, ph)) {
             player.x = oldX;
+        }
+        // Check Y movement separately
+        if (level.checkCollision(player.x + HITBOX_INSET, py, pw, ph)) {
             player.y = oldY;
         }
 
@@ -125,15 +137,22 @@ public class Game extends AnimationTimer {
             enemySpawnTimer = 0;
         }
 
-        // Update enemies
+        // Update enemies (separate X and Y for wall sliding)
         for (Enemy enemy : enemies) {
             float eOldX = enemy.x;
             float eOldY = enemy.y;
             enemy.update(input);
 
-            // Check enemy collision with level
-            if (level.checkCollision(enemy.x, enemy.y, enemy.getWidth(), enemy.getHeight())) {
+            // Calculate inset hitbox for enemy
+            float ew = enemy.getWidth() - HITBOX_INSET * 2;
+            float eh = enemy.getHeight() - HITBOX_INSET * 2;
+
+            // Check X movement separately
+            if (level.checkCollision(enemy.x + HITBOX_INSET, eOldY + HITBOX_INSET, ew, eh)) {
                 enemy.x = eOldX;
+            }
+            // Check Y movement separately
+            if (level.checkCollision(enemy.x + HITBOX_INSET, enemy.y + HITBOX_INSET, ew, eh)) {
                 enemy.y = eOldY;
             }
 
@@ -235,8 +254,8 @@ public class Game extends AnimationTimer {
                 playerLives--;
                 playerRespawnTimer = 0;
                 if (playerLives > 0) {
-                    player.respawn(800, 1100);
-                    explosions.add(new Explosion(800, 1100, Explosion.Type.SPAWN, atlas, player));
+                    player.respawn(64, 208);
+                    explosions.add(new Explosion(64, 208, Explosion.Type.SPAWN, atlas, player));
                 }
             }
         }
@@ -249,13 +268,13 @@ public class Game extends AnimationTimer {
 
     private void spawnEnemy() {
         // Spawn positions (top of screen)
-        int[] spawnX = {32, 384, 736};
+        int[] spawnX = {32, 128, 224};
         int x = spawnX[random.nextInt(spawnX.length)];
 
         Enemy.Type type = Enemy.Type.values()[random.nextInt(Enemy.Type.values().length)];
-        Enemy enemy = new Enemy(x, 32, type, atlas);
+        Enemy enemy = new Enemy(x, 16*TILE_SCALE, type, atlas);
         enemies.add(enemy);
-        explosions.add(new Explosion(x, 32, Explosion.Type.SPAWN, atlas, enemy));
+        explosions.add(new Explosion(x, 16*TILE_SCALE, Explosion.Type.SPAWN, atlas, enemy));
     }
 
     private void render() {

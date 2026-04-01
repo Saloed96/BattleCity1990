@@ -136,10 +136,8 @@ public class Explosion extends Entity {
                 if (spawningEntity instanceof Player playerRef) {
                     playerRef.setInvulnerable(false);
                     playerRef.finishSpawning();
-                    System.out.println("Player tank spawned at " + playerRef.x + "," + playerRef.y);
                 } else if (spawningEntity instanceof Enemy enemyRef) {
                     enemyRef.finishSpawning();
-                    System.out.println("Enemy tank spawned at " + enemyRef.x + "," + enemyRef.y);
                 }
             }
             
@@ -153,8 +151,10 @@ public class Explosion extends Entity {
     public void render(GraphicsContext g) {
         if (active && currentFrame < frames.length && frames[currentFrame] != null) {
             Image frameImage = frames[currentFrame];
-            // Scale 2x for rendering
-            g.drawImage(frameImage, x, y, frameImage.getWidth() * 2, frameImage.getHeight() * 2);
+            // Scale 1x and center at (x, y)
+            double w = frameImage.getWidth();
+            double h = frameImage.getHeight();
+            g.drawImage(frameImage, x - w / 2, y - h / 2, w, h);
         }
     }
 

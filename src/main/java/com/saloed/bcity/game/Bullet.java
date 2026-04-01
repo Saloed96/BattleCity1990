@@ -61,7 +61,7 @@ public class Bullet extends Entity {
         this.direction = direction;
         this.owner = owner;
         this.active = true;
-        this.scale = 2.0f;
+        this.scale = 1.0f;
 
         // Get the correct bullet sprite based on direction (with proper size)
         int sx, sy, sw, sh;

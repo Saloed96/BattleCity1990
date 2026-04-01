@@ -23,7 +23,7 @@ public class Display {
 
 		stage = primaryStage;
 		stage.setTitle(title);
-		stage.setResizable(false);
+		stage.setResizable(true);
 
 		canvas = new Canvas(width, height);
 		graphicsContext = canvas.getGraphicsContext2D();

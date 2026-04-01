@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static com.saloed.bcity.game.Level.TILE_SCALE;
+
 public class Enemy extends Entity {
 
     public static final int SPRITE_SCALE = 16;
@@ -82,7 +84,7 @@ public class Enemy extends Entity {
 
         this.heading = Heading.SOUTH;
         this.spriteMap = new HashMap<>();
-        this.scale = 2.0f;
+        this.scale = TILE_SCALE;
         this.speed = type == Type.FAST ? ENEMY_SPEED * 1.5f : ENEMY_SPEED;
         this.atlas = atlas;
         this.type = type;

@@ -5,9 +5,9 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Level {
 
-    public static final int TILES_X = 50;
-    public static final int TILES_Y = 37;
-    public static final int TILE_SCALE = 2;
+    public static final int TILES_X = 16;
+    public static final int TILES_Y = 15;
+    public static final float TILE_SCALE = 1.0f;
 
     private Tile[][] tiles;
     private TextureAtlas atlas;
@@ -26,49 +26,50 @@ public class Level {
             }
         }
         
-        // Add some brick walls patterns
-        for (int i = 5; i < 45; i += 8) {
-            for (int j = 5; j < 15; j += 4) {
+        // Border walls (brick)
+        for (int x = 0; x < TILES_X; x++) {
+            level[0][x] = 1;  // Top border
+            level[TILES_Y - 1][x] = 1;  // Bottom border
+        }
+        for (int y = 0; y < TILES_Y; y++) {
+            level[y][0] = 1;  // Left border
+            level[y][TILES_X - 1] = 1;  // Right border
+        }
+        
+        // Add brick wall patterns
+        for (int i = 2; i < 14; i += 4) {
+            for (int j = 2; j < 6; j += 2) {
                 level[j][i] = 1;
                 level[j][i+1] = 1;
             }
         }
         
         // Add steel walls
-        for (int i = 10; i < 40; i += 20) {
-            level[20][i] = 2;
-            level[20][i+1] = 2;
-        }
+        level[8][7] = 2;
+        level[8][8] = 2;
         
         // Add water
-        for (int x = 15; x < 25; x++) {
-            level[25][x] = 3;
+        for (int x = 11; x < 15; x++) {
+            level[10][x] = 3;
         }
         
         // Add grass
-        for (int x = 30; x < 40; x++) {
-            for (int y = 10; y < 15; y++) {
+        for (int x = 11; x < 15; x++) {
+            for (int y = 3; y < 6; y++) {
                 level[y][x] = 4;
             }
         }
         
-        // Add ice patches (slippery surface)
-        for (int x = 5; x < 15; x++) {
-            for (int y = 20; y < 24; y++) {
+        // Add ice patches
+        for (int x = 2; x < 5; x++) {
+            for (int y = 10; y < 12; y++) {
                 level[y][x] = 5;
             }
         }
         
-        // More ice near spawn areas
-        for (int x = 35; x < 45; x++) {
-            for (int y = 5; y < 8; y++) {
-                level[y][x] = 5;
-            }
-        }
-        
-        // Eagle base at bottom center (single 2x2 tile represented as 4 tiles)
+        // Eagle base at bottom center (2x2 tiles)
         int eagleX = TILES_X / 2 - 1;
-        int eagleY = TILES_Y - 4;
+        int eagleY = TILES_Y - 3;
         level[eagleY][eagleX] = 6;
         level[eagleY][eagleX+1] = 6;
         level[eagleY+1][eagleX] = 6;
@@ -89,7 +90,7 @@ public class Level {
 
     public Level(TextureAtlas atlas) {
         this.atlas = atlas;
-        this.tiles = new Tile[TILES_X][TILES_Y];
+        this.tiles = new Tile[TILES_Y][TILES_X];
         this.eagleDestroyed = false;
         loadLevel(DEFAULT_LEVEL);
     }
@@ -100,7 +101,7 @@ public class Level {
                 TileType type = TileType.fromId(layout[y][x]);
                 float px = x * Tile.TILE_SIZE * TILE_SCALE;
                 float py = y * Tile.TILE_SIZE * TILE_SCALE;
-                tiles[x][y] = new Tile(type, px, py, atlas);
+                tiles[y][x] = new Tile(type, px, py, atlas);
             }
         }
     }
@@ -109,7 +110,7 @@ public class Level {
         // Render non-grass tiles first
         for (int y = 0; y < TILES_Y; y++) {
             for (int x = 0; x < TILES_X; x++) {
-                Tile tile = tiles[x][y];
+                Tile tile = tiles[y][x];
                 if (tile.getType() != TileType.GRASS) {
                     tile.render(g);
                 }
@@ -121,7 +122,7 @@ public class Level {
         // Render grass on top (semi-transparent effect)
         for (int y = 0; y < TILES_Y; y++) {
             for (int x = 0; x < TILES_X; x++) {
-                Tile tile = tiles[x][y];
+                Tile tile = tiles[y][x];
                 if (tile.getType() == TileType.GRASS) {
                     tile.render(g);
                 }
@@ -133,7 +134,7 @@ public class Level {
         int tx = (int) (x / (Tile.TILE_SIZE * TILE_SCALE));
         int ty = (int) (y / (Tile.TILE_SIZE * TILE_SCALE));
         if (tx >= 0 && tx < TILES_X && ty >= 0 && ty < TILES_Y) {
-            return tiles[tx][ty];
+            return tiles[ty][tx];
         }
         return null;
     }
@@ -142,13 +143,13 @@ public class Level {
         // Check all tiles that the rectangle overlaps
         int startX = (int) (x / (Tile.TILE_SIZE * TILE_SCALE));
         int startY = (int) (y / (Tile.TILE_SIZE * TILE_SCALE));
-        int endX = (int) ((x + width) / (Tile.TILE_SIZE * TILE_SCALE));
-        int endY = (int) ((y + height) / (Tile.TILE_SIZE * TILE_SCALE));
+        int endX = (int) ((x + width - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
+        int endY = (int) ((y + height - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
 
         for (int ty = startY; ty <= endY; ty++) {
             for (int tx = startX; tx <= endX; tx++) {
                 if (tx >= 0 && tx < TILES_X && ty >= 0 && ty < TILES_Y) {
-                    if (tiles[tx][ty].isSolid()) {
+                    if (tiles[ty][tx].isSolid()) {
                         return true;
                     }
                 }
@@ -174,13 +175,13 @@ public class Level {
         // Check all tiles that the rectangle overlaps (bullets pass through water and grass)
         int startX = (int) (x / (Tile.TILE_SIZE * TILE_SCALE));
         int startY = (int) (y / (Tile.TILE_SIZE * TILE_SCALE));
-        int endX = (int) ((x + width) / (Tile.TILE_SIZE * TILE_SCALE));
-        int endY = (int) ((y + height) / (Tile.TILE_SIZE * TILE_SCALE));
+        int endX = (int) ((x + width - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
+        int endY = (int) ((y + height - 0.01f) / (Tile.TILE_SIZE * TILE_SCALE));
 
         for (int ty = startY; ty <= endY; ty++) {
             for (int tx = startX; tx <= endX; tx++) {
                 if (tx >= 0 && tx < TILES_X && ty >= 0 && ty < TILES_Y) {
-                    Tile tile = tiles[tx][ty];
+                    Tile tile = tiles[ty][tx];
                     // Bullets pass through water and grass
                     if (tile.isSolid() && tile.getType() != TileType.WATER && tile.getType() != TileType.GRASS) {
                         return true;
@@ -195,11 +196,11 @@ public class Level {
         return eagleDestroyed;
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return TILES_X * Tile.TILE_SIZE * TILE_SCALE;
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return TILES_Y * Tile.TILE_SIZE * TILE_SCALE;
     }
 }
